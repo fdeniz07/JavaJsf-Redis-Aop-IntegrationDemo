@@ -12,10 +12,10 @@ public class AppConfig {
 
     static {
         try (InputStream input = AppConfig.class.getClassLoader()
-                .getResourceAsStream("application.properties")) {
+                .getResourceAsStream("demo-dev.properties")) {
             if (input == null) {
-                logger.error("Unable to find application.properties");
-                throw new RuntimeException("application.properties not found");
+                logger.error("Unable to find demo-dev.properties");
+                throw new RuntimeException("demo-dev.properties not found");
             }
             properties.load(input);
             logger.info("Configuration loaded successfully");
