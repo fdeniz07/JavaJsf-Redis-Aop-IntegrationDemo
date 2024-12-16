@@ -7,3 +7,5 @@
 /dataSources/
 /dataSources.local.xml
 resources/application-kiwi.properties
+
+/src/main/resources/application-kiwi.properties
