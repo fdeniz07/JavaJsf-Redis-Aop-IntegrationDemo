@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>JSF Redis Demo</title>
+        <style type="text/css">
+            .metrics-panel {
+                margin-top: 20px;
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-radius: 4px;
+            }
+
+            .metric-item {
+                margin: 5px 0;
+                padding: 5px;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .metric-label {
+                font-weight: bold;
+                margin-right: 10px;
+                color: #495057;
+            }
+
+            .metric-value {
+                color: #0d6efd;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+        <h:form id="form">
+            <div>
+                <h:commandButton action="index2" value="Go to ScrolView" styleClass="ui-button-secondary"/>
+                <hr/>
+            </div>
+            <p:panel header="User Data">
+                <p:dataTable id="usersTable"
+                             var="user"
+                             value="#{userBean.lazyModel}"
+                             lazy="true"
+                             rows="50"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rowsPerPageTemplate="50,100,250"
+                             currentPageReportTemplate="Showing {startRecord}-{endRecord} of {totalRecords} records"
+                             emptyMessage="Click 'Load from Database' button to load data"
+                             paginatorPosition="both">
+
+                    <f:facet name="header">
+                        User List
+                    </f:facet>
+
+                    <p:column headerText="ID" sortBy="#{user.id}">
+                        <h:outputText value="#{user.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Name" sortBy="#{user.name}">
+                        <h:outputText value="#{user.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Email" sortBy="#{user.email}">
+                        <h:outputText value="#{user.email}"/>
+                    </p:column>
+
+                    <p:column headerText="Department" sortBy="#{user.department}">
+                        <h:outputText value="#{user.department}"/>
+                    </p:column>
+
+                    <f:facet name="paginatorTop">
+                        <p:outputPanel>
+                            <div class="ui-g">
+                                <div class="ui-g-12 ui-md-6" style="text-align: left">
+                                    <p:outputLabel value="Rows per page: "/>
+                                    <p:selectOneMenu value="#{userBean.rowsPerPage}" style="margin-left: 10px">
+                                        <f:selectItem itemLabel="50" itemValue="50"/>
+                                        <f:selectItem itemLabel="100" itemValue="100"/>
+                                        <f:selectItem itemLabel="250" itemValue="250"/>
+                                        <p:ajax listener="#{userBean.onRowsPerPageChange}" update="usersTable"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </p:outputPanel>
+                    </f:facet>
+                </p:dataTable>
+
+                <p:spacer height="10"/>
+
+                <p:commandButton value="Load from Database"
+                                 actionListener="#{userBean.loadFromDatabase}"
+                                 update="@form"
+                                 disabled="#{userBean.dbButtonDisabled}"
+                                 styleClass="ui-button-primary"/>
+
+                <p:spacer width="10"/>
+
+                <p:commandButton value="Load from Redis"
+                                 actionListener="#{userBean.loadFromRedis}"
+                                 update="@form"
+                                 disabled="#{not userBean.redisButtonEnabled}"
+                                 styleClass="ui-button-success"/>
+
+                <!-- Performance Metrics Panel -->
+                <div class="metrics-panel">
+                    <h3>Performance Metrics</h3>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Total Records:</span>
+                        <h:outputText value="#{userBean.totalRecords}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Database Load Time:</span>
+                        <h:outputText value="#{userBean.dbLoadTime}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Database Data Size:</span>
+                        <h:outputText value="#{userBean.dbDataSize}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Load Time:</span>
+                        <h:outputText value="#{userBean.redisLoadTime}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Data Size:</span>
+                        <h:outputText value="#{userBean.redisDataSize}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Sync Time:</span>
+                        <h:outputText value="#{userBean.redisSyncTime}" styleClass="metric-value"/>
+                    </div>
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>

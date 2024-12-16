@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Lazy Load with Scroll</title>
+        <style type="text/css">
+            .metrics-panel {
+                margin-top: 20px;
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-radius: 4px;
+            }
+
+            .metric-item {
+                margin: 5px 0;
+                padding: 5px;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .metric-label {
+                font-weight: bold;
+                margin-right: 10px;
+                color: #495057;
+            }
+
+            .metric-value {
+                color: #0d6efd;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+        <h:form id="form">
+            <div>
+                <h:commandButton action="index" value="Back to Home" styleClass="ui-button-secondary"/>
+                <hr/>
+            </div>
+            <p:panel header="User Data with Infinite Scroll">
+                <p:dataTable id="usersTable"
+                             var="user"
+                             value="#{scrollUserBean.lazyModel}"
+                             lazy="true"
+                             scrollable="true"
+                             scrollHeight="400"
+                             virtualScroll="true"
+                             rows="50"
+                             scrollRows="50"
+                             emptyMessage="Click 'Load from Database' button to load data">
+
+                    <p:column headerText="ID" width="100">
+                        <h:outputText value="#{user.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Name" width="200">
+                        <h:outputText value="#{user.name}"/>
+                    </p:column>
+
+                    <p:column headerText="Email" width="250">
+                        <h:outputText value="#{user.email}"/>
+                    </p:column>
+
+                    <p:column headerText="Department" width="200">
+                        <h:outputText value="#{user.department}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:spacer height="10"/>
+
+                <p:commandButton value="Load from Database"
+                                 actionListener="#{scrollUserBean.loadFromDatabase}"
+                                 update="@form"
+                                 disabled="#{scrollUserBean.dbButtonDisabled}"
+                                 styleClass="ui-button-primary"/>
+
+                <p:spacer width="10"/>
+
+                <p:commandButton value="Load from Redis"
+                                 actionListener="#{scrollUserBean.loadFromRedis}"
+                                 update="@form"
+                                 disabled="#{not scrollUserBean.redisButtonEnabled}"
+                                 styleClass="ui-button-success"/>
+
+                <!-- Performance Metrics Panel -->
+                <div class="metrics-panel">
+                    <h3>Performance Metrics</h3>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Total Records:</span>
+                        <h:outputText value="#{scrollUserBean.totalRecords}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Database Load Time:</span>
+                        <h:outputText value="#{scrollUserBean.dbLoadTime}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Database Data Size:</span>
+                        <h:outputText value="#{scrollUserBean.dbDataSize}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Load Time:</span>
+                        <h:outputText value="#{scrollUserBean.redisLoadTime}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Data Size:</span>
+                        <h:outputText value="#{scrollUserBean.redisDataSize}" styleClass="metric-value"/>
+                    </div>
+
+                    <div class="metric-item">
+                        <span class="metric-label">Redis Sync Time:</span>
+                        <h:outputText value="#{scrollUserBean.redisSyncTime}" styleClass="metric-value"/>
+                    </div>
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</html>
